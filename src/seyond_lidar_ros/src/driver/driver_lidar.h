@@ -28,6 +28,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **********************************************************************************************************************/
 
 #pragma once
+#include <cstdint>
 #include <pcl/point_cloud.h>
 #include <pcl/common/transforms.h>
 #include <Eigen/Eigen>
@@ -204,6 +205,7 @@ class DriverLidar {
   std::vector<uint8_t> data_buffer;
   double current_ts_start_;
   double frame_start_ts_;
+  uint32_t current_ts_start_us_;
 
   // transform
   Eigen::Matrix4f T_2_0_;

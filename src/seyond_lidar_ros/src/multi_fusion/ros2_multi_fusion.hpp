@@ -115,7 +115,7 @@ inline MultiFusion::MultiFusion(std::shared_ptr<rclcpp::Node> node_ptr,
   }
 
   rclcpp::QoS qos{rclcpp::KeepLast(buffer_size_)};
-  qos.reliable();
+  qos.best_effort();
   fusion_frame_pub_ = node_ptr_->create_publisher<PointCloud2Msg>(
       common_config.fusion_topic, qos);
 
