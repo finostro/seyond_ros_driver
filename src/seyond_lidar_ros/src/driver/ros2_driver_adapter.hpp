@@ -18,6 +18,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <std_msgs/msg/float64.hpp>
+#include <std_msgs/msg/header.hpp>
 #include <yaml-cpp/yaml.h>
 
 #include <limits>
@@ -26,11 +27,14 @@
 #include <utility>
 #include <vector>
 
+#include <sample_collector_machine_interface/msg/heartbeat.hpp>
+
 #include "driver_lidar.h"
 #include "yaml_tools.hpp"
 #include "seyond/msg/seyond_packet.hpp"
 #include "seyond/msg/seyond_scan.hpp"
 #include "src/multi_fusion/ros2_multi_fusion.hpp"
+
 
 
 #define ROS_INFO(...) RCLCPP_INFO(rclcpp::get_logger("seyond"), __VA_ARGS__)
@@ -56,6 +60,8 @@ class ROSAdapter {
     rclcpp::QoS qos(rclcpp::KeepLast(1));
     qos.best_effort();
     inno_frame_pub_ = node_ptr_->create_publisher<sensor_msgs::msg::PointCloud2>(lidar_config_.frame_topic, qos);
+    heartbeat_pub_  = node_ptr_->create_publisher<sample_collector_machine_interface::msg::Heartbeat>(lidar_config_.frame_topic + "/heartbeat", 10);
+    
     driver_ptr_->register_publish_frame_callback(
         std::bind(&ROSAdapter::publishFrame, this, std::placeholders::_1, std::placeholders::_2));
 
@@ -146,6 +152,15 @@ class ROSAdapter {
     ros_msg.get().width = frame.width;
     ros_msg.get().height = frame.height;
     inno_frame_pub_->publish(std::move(ros_msg));
+
+    this->sendHeartBeat(ros_msg.header);
+  }
+
+  void sendHeartBeat(const std_msgs::msg::Header& header)
+  {
+    sample_collector_machine_interface::msg::Heartbeat heartbeat_msg;
+    heartbeat_msg.header = header;
+    this->heartbeat_pub_->publish(heartbeat_msg);
   }
 
  private:
@@ -154,6 +169,7 @@ class ROSAdapter {
   std::unique_ptr<seyond::DriverLidar> driver_ptr_;
 
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr inno_frame_pub_{nullptr};
+  rclcpp::Publisher<sample_collector_machine_interface::msg::Heartbeat>::SharedPtr heartbeat_pub_{nullptr};
   rclcpp::Publisher<seyond::msg::SeyondScan>::SharedPtr inno_pkt_pub_{nullptr};
   rclcpp::Subscription<seyond::msg::SeyondScan>::SharedPtr inno_pkt_sub_{nullptr};
 
