@@ -7,6 +7,7 @@
  */
 
 #pragma once
+#include <cstdint>
 #include <pcl/point_cloud.h>
 #include <pcl/common/transforms.h>
 #include <Eigen/Eigen>
@@ -177,6 +178,8 @@ class DriverLidar {
   std::vector<uint8_t> data_buffer;
   int32_t coordinate_mode_;
   double current_ts_start_;
+  uint32_t current_ts_start_us_;
+  double scan_start_time_ = 0.0;
 
   // transform
   bool transform_enable_;

@@ -53,8 +53,8 @@ class ROSAdapter {
   }
 
   void init() {
-    rclcpp::QoS qos(rclcpp::KeepLast(10));
-    qos.reliable();
+    rclcpp::QoS qos(rclcpp::KeepLast(1));
+    qos.best_effort();
     inno_frame_pub_ = node_ptr_->create_publisher<sensor_msgs::msg::PointCloud2>(lidar_config_.frame_topic, qos);
     driver_ptr_->register_publish_frame_callback(
         std::bind(&ROSAdapter::publishFrame, this, std::placeholders::_1, std::placeholders::_2));
@@ -134,17 +134,17 @@ class ROSAdapter {
   }
 
   void publishFrame(const pcl::PointCloud<SeyondPoint>& frame, double timestamp) {
-    pcl::Indices indices;
-    pcl::PointCloud<SeyondPoint> filtered_frame;
-    pcl::removeNaNFromPointCloud<SeyondPoint>(frame, filtered_frame, indices);
-    sensor_msgs::msg::PointCloud2 ros_msg;
-    pcl::toROSMsg(filtered_frame, ros_msg);
-    ros_msg.header.frame_id = lidar_config_.frame_id;
+    // pcl::Indices indices;
+    // pcl::PointCloud<SeyondPoint> filtered_frame;
+    // pcl::removeNaNFromPointCloud<SeyondPoint>(frame, filtered_frame, indices);
+    auto ros_msg = inno_frame_pub_->borrow_loaned_message();
+    pcl::toROSMsg(frame, ros_msg.get());
+    ros_msg.get().header.frame_id = lidar_config_.frame_id;
     int64_t ts_ns = timestamp * 1000;
-    ros_msg.header.stamp.sec = ts_ns / 1000000000;
-    ros_msg.header.stamp.nanosec = ts_ns % 1000000000;
-    ros_msg.width = filtered_frame.width;
-    ros_msg.height = filtered_frame.height;
+    ros_msg.get().header.stamp.sec = ts_ns / 1000000000;
+    ros_msg.get().header.stamp.nanosec = ts_ns % 1000000000;
+    ros_msg.get().width = frame.width;
+    ros_msg.get().height = frame.height;
     inno_frame_pub_->publish(std::move(ros_msg));
   }
 

@@ -71,7 +71,7 @@ MultiFusion::MultiFusion(std::shared_ptr<rclcpp::Node> node_ptr, std::vector<sey
   lidar_num_ = lidar_configs.size();
 
   rclcpp::QoS qos(rclcpp::KeepLast(10));
-  qos.reliable();
+  qos.best_effort();
   fusion_frame_pub_ = node_ptr_->create_publisher<sensor_msgs::msg::PointCloud2>(common_config.fusion_topic, qos);
 
   if (lidar_num_ < 2 || lidar_num_ > 5) {
@@ -82,7 +82,7 @@ MultiFusion::MultiFusion(std::shared_ptr<rclcpp::Node> node_ptr, std::vector<sey
   lidar_subs_.resize(lidar_num_);
   for (uint32_t i = 0; i < lidar_num_; ++i) {
     lidar_subs_[i] = std::make_shared<message_filters::Subscriber<sensor_msgs::msg::PointCloud2>>(
-        node_ptr_, lidar_configs[i].frame_topic);
+        node_ptr_, lidar_configs[i].frame_topic, rmw_qos_profile_sensor_data);
   }
 
   switch (lidar_num_) {

@@ -15,7 +15,7 @@ namespace seyond {
 
 struct EIGEN_ALIGN16 PointXYZIT {
   PCL_ADD_POINT4D;
-  std::uint32_t timestamp;
+  double timestamp;
   float intensity;
   std::uint8_t flags;
   std::uint8_t elongation;

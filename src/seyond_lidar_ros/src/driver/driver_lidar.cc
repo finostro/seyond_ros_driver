@@ -429,7 +429,9 @@ int32_t DriverLidar::lidar_data_callback(const InnoDataPacket *pkt) {
   } else {
     if (next_idx_flag) {
       transform_pointcloud();
-      frame_publish_cb_(*pcl_pc_ptr, pkt->common.ts_start_us);
+      
+      frame_publish_cb_(*pcl_pc_ptr, scan_start_time_);
+      scan_start_time_ =pkt->common.ts_start_us;
       pcl_pc_ptr->clear();
     }
     convert_and_parse(pkt);
@@ -469,6 +471,7 @@ void DriverLidar::convert_and_parse(const InnoDataPacket *pkt) {
 void DriverLidar::data_packet_parse(const InnoDataPacket *pkt) {
   // calculate the point timestamp
   current_ts_start_ = pkt->common.ts_start_us / us_in_second_c;
+  current_ts_start_us_ = pkt->common.ts_start_us - scan_start_time_; 
   // adapt different data structures form different lidar
   if (CHECK_EN_XYZ_POINTCLOUD_DATA(pkt->type)) {
     const InnoEnXyzPoint *pt =
@@ -506,7 +509,9 @@ void DriverLidar::point_xyz_data_parse(bool is_use_refl, uint32_t point_num, Poi
     point.scan_idx = point_ptr->scan_idx;
     point.flags = point_ptr->channel | roi | (point_ptr->facet << 3);
     point.is_2nd_return = point_ptr->is_2nd_return;
-    point.timestamp = point_ptr->ts_10us * ten_us_in_nanosecond_c ;
+    // point.timestamp =  current_ts_start_ + point_ptr->; 
+    // point.timestamp = point_ptr->ts_10us / ten_us_in_second_c + current_ts_start_;
+    point.timestamp = point_ptr->ts_10us * 10 + current_ts_start_us_;
 #endif
     coordinate_transfer(&point, coordinate_mode_, point_ptr->x, point_ptr->y, point_ptr->z);
     pcl_pc_ptr->points.push_back(point);
