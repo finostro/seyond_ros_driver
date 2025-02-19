@@ -1,0 +1,108 @@
+<!-- -*- mode: XML -*- -->
+
+<launch>
+  <!-- declare arguments with default values -->
+  <!-- the path of config file -->
+  <arg name="config_path" default="" />
+  <!-- limit output log from lidar (info warn error) -->
+  <arg name="log_level" default="info" />
+  <!-- replay packets rosbag flag -->
+  <arg name="replay_rosbag" default="false" />
+  <!-- packets topic flag -->
+  <arg name="packet_mode" default="false" />
+  <!-- aggregate packets num -->
+  <arg name="aggregate_num" default="20" />
+  <!-- the id of the frame data -->
+  <arg name="frame_id" default="seyond" />
+  <!-- the topic name of the frame -->
+  <arg name="frame_topic" default="/iv_points" />
+  <!-- the topic name of the packets -->
+  <arg name="packet_topic" default="/iv_packets" />
+
+  <!-- the name of lidar -->
+  <arg name="lidar_name" default="seyond" />
+  <!-- the IP address of the lidar device -->
+  <arg name="lidar_ip" default="172.168.1.10" />
+  <!-- the port of lidar -->
+  <arg name="port" default="8010" />
+  <!-- the upd_port of lidar -->
+  <arg name="udp_port" default="8010" />
+  <!-- reflectance or intensity -->
+  <arg name="reflectance_mode" default="true" />
+  <!-- 1:singe strongest return 2:2 strongest return -->
+  <arg name="multiple_return" default="1" />
+
+  <!-- continue live -->
+  <arg name="continue_live" default="false" />
+
+  <!-- the path of (tcpdump/wireshark) pcap file -->
+  <arg name="pcap_file" default="" />
+  <!-- the path of hv table file -->
+  <arg name="hv_table_file" default="" />
+  <!-- the rate of packet -->
+  <arg name="packet_rate" default="10000" />
+  <!-- whether the read pointer to the file can be returned to the starting point -->
+  <arg name="file_rewind" default="0" />
+  <!-- to limit pointcloud max and min range in ROS. SDK also has config parameters max_distance and min_distance. 
+  So basically we have 2 sets of parameters to do the same thing -->
+  <arg name="max_range" default="2000.0" />
+  <arg name="min_range" default="0.4" />
+  <!-- when using public build, use this parameter to pass config parameter name value pairs -->
+  <arg name="name_value_pairs" default="" />
+  <!-- specify coordinate transformation, default is 0. 
+  you can specify it to change coordinate from x/y/z to y/z/x, y/x/z, z/-y/x, z/x/y, z/-y/x -->
+  <arg name="coordinate_mode" default="3" />
+
+  <!-- transform -->
+  <arg name="transform_enable" default="false" />
+  <arg name="x" default="0.0" />
+  <arg name="y" default="0.0" />
+  <arg name="z" default="0.0" />
+  <arg name="pitch" default="0.0" />
+  <arg name="yaw" default="0.0" />
+  <arg name="roll" default="0.0" />
+  <!-- transform matrix string, if not empty, priority is higher than x/y/z/pitch/yaw/roll -->
+  <arg name="transform_matrix" default="" />
+
+
+  <node pkg="seyond" name="seyond" type="seyond_node" output="screen">
+    <param name="config_path" value="$(arg config_path)"/>
+    <param name="log_level" value="$(arg log_level)"/>
+    <param name="replay_rosbag" value="$(arg replay_rosbag)"/>
+    <param name="packet_mode" value="$(arg packet_mode)"/>
+    <param name="aggregate_num" value="$(arg aggregate_num)"/>
+    <param name="frame_id" value="$(arg frame_id)"/>
+    <param name="frame_topic" value="$(arg frame_topic)"/>
+    <param name="packet_topic" value="$(arg packet_topic)"/>
+
+    <param name="lidar_name" value="$(arg lidar_name)"/>
+    <param name="lidar_ip" value="$(arg lidar_ip)"/>
+    <param name="port" value="$(arg port)"/>
+    <param name="udp_port" value="$(arg udp_port)"/>
+    <param name="reflectance_mode" value="$(arg reflectance_mode)"/>
+    <param name="multiple_return" value="$(arg multiple_return)"/>
+
+    <param name="continue_live" value="$(arg continue_live)"/>
+
+    <param name="pcap_file" value="$(arg pcap_file)"/>
+    <param name="hv_table_file" value="$(arg hv_table_file)"/>
+    <param name="packet_rate" value="$(arg packet_rate)"/>
+    <param name="file_rewind" value="$(arg file_rewind)"/>
+
+    <param name="max_range" value="$(arg max_range)"/>
+    <param name="min_range" value="$(arg min_range)"/>
+    <param name="name_value_pairs" value="$(arg name_value_pairs)"/>
+    <param name="coordinate_mode" value="$(arg coordinate_mode)"/>
+
+    <param name="transform_enable" value="$(arg transform_enable)"/>
+    <param name="x" value="$(arg x)"/>
+    <param name="y" value="$(arg y)"/>
+    <param name="z" value="$(arg z)"/>
+    <param name="pitch" value="$(arg pitch)"/>
+    <param name="yaw" value="$(arg yaw)"/>
+    <param name="roll" value="$(arg roll)"/>
+    <param name="transform_matrix" value="$(arg transform_matrix)"/>
+  </node>
+  <!-- rviz -->
+  <node pkg="rviz" name="rviz" type="rviz" args="-d $(find seyond)/rviz/rviz.rviz" />
+</launch>

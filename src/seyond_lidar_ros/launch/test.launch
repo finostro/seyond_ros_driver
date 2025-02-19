@@ -1,0 +1,29 @@
+<!-- -*- mode: XML -*- -->
+
+<launch>
+  <!-- declare arguments with default values -->
+  <!-- the topic name of the frame -->
+  <arg name="frame_topic" default="/iv_points" />
+  <!-- the topic name of the packets -->
+  <arg name="packet_topic" default="/iv_packets" />
+  <!-- print stamp flag -->
+  <arg name="stamp" default="false" />
+  <!-- print hz flag -->
+  <arg name="hz" default="false" />
+  <!-- test window -->
+  <arg name="window" default="30" />
+  <!-- print packet size per frame -->
+  <arg name="packet_size" default="false" />
+  <!-- print packet loss rate -->
+  <arg name="packet_loss_rate" default="false" />
+
+  <node pkg="seyond" name="test" type="seyond_test" output="screen">
+    <param name="frame_topic" value="$(arg frame_topic)"/>
+    <param name="packet_topic" value="$(arg packet_topic)"/>
+    <param name="stamp" value="$(arg stamp)"/>
+    <param name="hz" value="$(arg hz)"/>
+    <param name="window" value="$(arg window)"/>
+    <param name="packet_size" value="$(arg packet_size)"/>
+    <param name="packet_loss_rate" value="$(arg packet_loss_rate)"/>
+  </node>
+</launch>
