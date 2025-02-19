@@ -13,9 +13,10 @@ This project is built on the Seyond-SDK and serves as a demonstration for custom
 ├── create_deb.bash                     // create deb script
 ├── doc                                 // documentation
 ├── src
-│   └── seyond_lidar_ros             // seyond ros package
+│   └── seyond_lidar_ros                // seyond ros package
 ├── LICENSE
 ├── CHANGELOG.md
+├── README_CN.md
 └── README.md
 ```
 
@@ -34,9 +35,8 @@ This project is built on the Seyond-SDK and serves as a demonstration for custom
 
 The following official versions are verified to support
 
-|     |     |     |     |
-| --- | --- | --- | --- |
 | Distro | Platform | Release data | EOL data |
+| --- | --- | --- | --- |
 | Melodic | Ubuntu 18.04 | May 23rd, 2018 | June 2023 |
 | Noetic | Ubuntu 20.04 | May 23rd, 2020 | May 2025 |
 | Foxy | Ubuntu 20.04 | June 5th, 2020 | June 2023 |
@@ -59,19 +59,18 @@ please refer to [config.yaml](/src/seyond_lidar_ros/config/config.yaml), support
 
 # ROS Command Line Parameters
 
-|     |     |     |
-| --- | --- | --- |
 | Parameter | Default Value | description |
+| --- | --- | --- |
 | config_path | ""  | config_path, if use this param, other params will become invalid |
 | log_level | info | limit log from lidar, can choose from (info warn error) |
 | replay_rosbag | false | replay rosbag packet flag |
 | packet_mode | false | packet mode enable |
 | aggregate_num | 20  | aggregate packets num |
-| frame_id | seyond |     |
-| frame_topic | iv_points |     |
-| packet_topic | iv_packets |     |
+| frame_id | seyond | - |
+| frame_topic | iv_points | - |
+| packet_topic | iv_packets | - |
 | lidar_name | seyond | lidar name |
-| lidar_ip | 172.168.1.10 |     |
+| lidar_ip | 172.168.1.10 | - |
 | port | 8010 | tcp port |
 | udp_port | 8010 | udp port |
 | reflectance_mode | true | 0:intensiy mode 1:reflectance mode |
@@ -86,12 +85,12 @@ please refer to [config.yaml](/src/seyond_lidar_ros/config/config.yaml), support
 | name_value_pairs | ""  | some settings of lidar are consistent with the usage of inno_pc_client |
 | coordinate_mode | 3   | convert the xyz direction of a point cloud, x/y/z, 0:up/right/forward 3:forward/left/up |
 | transform_enable | false | transform enable |
-| x   | 0.0 |     |
-| y   | 0.0 |     |
-| z   | 0.0 |     |
-| pitch | 0.0 |     |
-| yaw | 0.0 |     |
-| roll | 0.0 |     |
+| x   | 0.0 | - |
+| y   | 0.0 | - |
+| z   | 0.0 | - |
+| pitch | 0.0 | - |
+| yaw | 0.0 | - |
+| roll | 0.0 | - |
 | transform_matrix | ""  | transform matrix string, if not empty, priority is higher than x/y/z/pitch/yaw/roll |
 
 # Quick start
