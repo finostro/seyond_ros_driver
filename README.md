@@ -4,7 +4,7 @@
 
 **seyond_lidar_ros** is a driver package for the Seyond LiDAR, compatible with both ROS and ROS2.
 
-This project is built on the Seyond-SDK and serves as a demonstration for customers, providing a practical reference on how to utilize the Seyond-SDK.
+This project is built on the inno-lidar-sdk and serves as a demonstration for customers, providing a practical reference on how to utilize the inno-lidar-sdk.
 
 ## Directory structure
 
@@ -28,7 +28,7 @@ This project is built on the Seyond-SDK and serves as a demonstration for custom
   
 - Robin-W
   
-- Robin-E1X
+- Robin-ELITE(Robin-E1X)
   
 
 # Environment and Dependencies
