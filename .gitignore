@@ -49,3 +49,5 @@ install/
 log/
 src/CMakeLists.txt
 .catkin_workspace
+*.deb
+*.ddeb

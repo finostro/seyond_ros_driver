@@ -35,7 +35,7 @@ if($ENV{ROS_VERSION} MATCHES "2")
   endif()
 
   if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_compile_options(-Wno-format-extra-args -Wno-format)
+    add_compile_options(-Wno-format-extra-args -Wno-format -Wno-format-security)
   endif()
 
   # find dependencies

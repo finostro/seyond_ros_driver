@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>seyond</name>
-  <version>3.0.0</version>
+  <version>1.0.0</version>
   <description>The seyond driver package</description>
   <maintainer email="yuechao.gu@cn.seyond.com">Yuechao Gu</maintainer>
   <license>Apache 2.0</license>
@@ -15,8 +15,6 @@
   <depend condition="$ROS_VERSION == 1">message_generation</depend>
 
   <depend condition="$ROS_VERSION == 2">rclcpp</depend>
-  <depend condition="$ROS_VERSION == 2">pcl</depend>
-  <depend condition="$ROS_VERSION == 2">pcl_conversions</depend>
 
   <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>
