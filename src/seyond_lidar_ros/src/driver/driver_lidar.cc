@@ -488,9 +488,10 @@ void DriverLidar::point_xyz_data_parse(bool is_use_refl, uint32_t point_num, Poi
     }
 
     if constexpr (std::is_same<PointType, const InnoEnXyzPoint *>::value) {
-      point.intensity = is_use_refl ? point_ptr->reflectance : point_ptr->intensity;
+      point.intensity =
+          is_use_refl ? static_cast<float>(point_ptr->reflectance) : static_cast<float>(point_ptr->intensity);
     } else if constexpr (std::is_same<PointType, const InnoXyzPoint *>::value) {
-      point.intensity = point_ptr->refl;
+      point.intensity = static_cast<float>(point_ptr->refl);
     }
 #ifdef ENABLE_XYZIT
     if constexpr (std::is_same<PointType, const InnoEnXyzPoint *>::value) {
