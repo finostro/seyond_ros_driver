@@ -5,17 +5,36 @@ if [ -z "$ROS_VERSION" ] || [ -z "$ROS_DISTRO" ]; then
   exit 1
 fi
 
-echo "ROS_VERSION: $ROS_VERSION"
-echo "ROS_DISTRO: $ROS_DISTRO"
-
 CURRENT_DIR=$(cd $(dirname $0); pwd)
 PROJECT_DIR=${CURRENT_DIR}
 DEB_ROS_ROOT=opt/ros/${ROS_DISTRO}
 
+echo -e "\n\033[1;32m-- (1). Check the build result...\033[0m"
+# check the driver has been built 
+if [[ -e "${PROJECT_DIR}/install/setup.sh" ]]; then
+  echo "The driver has been built"
+  source ${PROJECT_DIR}/install/setup.sh
+  echo "ROS_VERSION: $ROS_VERSION"
+  echo "ROS_DISTRO: $ROS_DISTRO"
+  # update the DISTRO
+  DEB_ROS_ROOT=opt/ros/${ROS_DISTRO}
+else
+  # build the driver
+  echo "The driver has not been built, start to build the driver"
+  echo "ROS_VERSION: $ROS_VERSION"
+  echo "ROS_DISTRO: $ROS_DISTRO"
+  ${PROJECT_DIR}/build.bash
+fi
+
+echo -e "\n\033[1;32m-- (2). Clean the output directory...\033[0m"
+echo "The output directory is ${CURRENT_DIR}/output"
 # result output
 OUTPUT_DIR=${CURRENT_DIR}/output
+rm -rf ${OUTPUT_DIR}
 mkdir -p ${OUTPUT_DIR}
 cd ${OUTPUT_DIR}
+
+echo -e "\n\033[1;32m-- (3). Build the deb package...\033[0m"
 
 # build in local
 DEB_VERSION=1.0.0
@@ -55,3 +74,5 @@ rm -rf deb_root
 rm -rf ${CURRENT_DIR}/deb_control
 ls -lrt
 popd
+
+echo -e "\n\033[1;32m-- (4). Done!\033[0m"
