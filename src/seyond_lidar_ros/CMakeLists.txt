@@ -85,9 +85,9 @@ if($ENV{ROS_VERSION} MATCHES "2")
   )
 
   target_link_libraries(seyond_node
-    innolidarsdkclient
-    innolidarsdkcommon
-    innolidarutils
+    innolidarsdkclient.a
+    innolidarsdkcommon.a
+    innolidarutils.a
     ${PCL_LIBRARIES}
     ${YAML_CPP_LIBRARIES}
   )
@@ -139,10 +139,6 @@ if($ENV{ROS_VERSION} MATCHES "2")
   install(FILES
     config/config.yaml
     DESTINATION share/${PROJECT_NAME}
-  )
-  install(DIRECTORY
-    ${SEYOND_SDK_PATH}/lib/
-    DESTINATION lib/${PROJECT_NAME}
   )
 
   ament_package()
@@ -204,9 +200,9 @@ if($ENV{ROS_VERSION} MATCHES "1")
   target_link_libraries(seyond_node
     ${catkin_LIBRARIES}
     ${YAML_CPP_LIBRARIES}
-    innolidarsdkclient
-    innolidarsdkcommon
-    innolidarutils
+    innolidarsdkclient.a
+    innolidarsdkcommon.a
+    innolidarutils.a
   )
 
   # seyond_test
@@ -227,10 +223,6 @@ if($ENV{ROS_VERSION} MATCHES "1")
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
     ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
     LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
-
-  install(DIRECTORY
-    ${SEYOND_SDK_PATH}/lib/
-    DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
 
   install(FILES
     launch/start.launch
