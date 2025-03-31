@@ -208,7 +208,7 @@ void DriverLidar::init_log_s(std::string &log_limit,
 
 void DriverLidar::lidar_log_callback_s(void *ctx, enum InnoLogLevel level, const char *header1, const char *header2,
                                        const char *msg) {
-  DriverLidar::ros_log_cb_s_(static_cast<int32_t>(level), header1, msg);
+  DriverLidar::ros_log_cb_s_(static_cast<int32_t>(level), header2, msg);
 }
 
 void DriverLidar::start_lidar() {
