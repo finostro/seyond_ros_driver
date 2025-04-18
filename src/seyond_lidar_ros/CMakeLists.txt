@@ -30,10 +30,6 @@ endif()
 if($ENV{ROS_VERSION} MATCHES "2")
   add_definitions(-DROS2_FOUND)
 
-  if(($ENV{ROS_DISTRO} MATCHES "jazzy"))
-    add_definitions(-DROS_JAZZY)
-  endif()
-
   if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_compile_options(-Wno-format-extra-args -Wno-format -Wno-format-security)
   endif()
@@ -59,6 +55,15 @@ if($ENV{ROS_VERSION} MATCHES "2")
 
   # add PCL include PATH
   list(APPEND PCL_INCLUDE_DIRS /opt/ros/$ENV{ROS_DISTRO}/include)
+
+  if(($ENV{ROS_DISTRO} MATCHES "humble") OR ($ENV{ROS_DISTRO} MATCHES "jazzy"))
+    file(GLOB SUBDIRS /opt/ros/$ENV{ROS_DISTRO}/include/*)
+    foreach(SUBDIR ${SUBDIRS})
+      if(IS_DIRECTORY ${SUBDIR})
+        list(APPEND PCL_INCLUDE_DIRS ${SUBDIR})
+      endif()
+    endforeach()
+  endif()
 
   include_directories(./)
 

@@ -8,11 +8,7 @@
 
 #pragma once
 
-#ifdef ROS_JAZZY
-#include <pcl_conversions/pcl_conversions/pcl_conversions.h>
-#else
 #include <pcl_conversions/pcl_conversions.h>
-#endif
 
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
