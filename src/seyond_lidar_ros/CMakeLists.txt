@@ -53,18 +53,6 @@ if($ENV{ROS_VERSION} MATCHES "2")
     DEPENDENCIES std_msgs
   )
 
-  # add PCL include PATH
-  list(APPEND PCL_INCLUDE_DIRS /opt/ros/$ENV{ROS_DISTRO}/include)
-
-  if(($ENV{ROS_DISTRO} MATCHES "humble") OR ($ENV{ROS_DISTRO} MATCHES "jazzy"))
-    file(GLOB SUBDIRS /opt/ros/$ENV{ROS_DISTRO}/include/*)
-    foreach(SUBDIR ${SUBDIRS})
-      if(IS_DIRECTORY ${SUBDIR})
-        list(APPEND PCL_INCLUDE_DIRS ${SUBDIR})
-      endif()
-    endforeach()
-  endif()
-
   include_directories(./)
 
   # seyond_node
