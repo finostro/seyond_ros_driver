@@ -173,9 +173,8 @@ if($ENV{ROS_VERSION} MATCHES "1")
     ${catkin_INCLUDE_DIRS}
   )
 
-  catkin_package(
-    CATKIN_DEPENDS ${${PROJECT_NAME}_CATKIN_DEPS}
-    INCLUDE_DIRS node
+  catkin_package(CATKIN_DEPENDS
+    ${${PROJECT_NAME}_CATKIN_DEPS}
   )
 
   link_directories(
