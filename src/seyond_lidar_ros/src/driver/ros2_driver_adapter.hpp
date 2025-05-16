@@ -54,7 +54,7 @@ class ROSAdapter {
     driver_ptr_->register_publish_frame_callback(
         std::bind(&ROSAdapter::publishFrame, this, std::placeholders::_1, std::placeholders::_2));
 
-    if (lidar_config_.packet_mode) {
+    if (lidar_config_.packet_mode || lidar_config_.replay_rosbag) {
       inno_pkt_pub_ = node_ptr_->create_publisher<seyond::msg::SeyondScan>(lidar_config_.packet_topic, 100);
       inno_pkt_sub_ = node_ptr_->create_subscription<seyond::msg::SeyondScan>(
           lidar_config_.packet_topic, 100, std::bind(&ROSAdapter::subscribePacket, this, std::placeholders::_1));
