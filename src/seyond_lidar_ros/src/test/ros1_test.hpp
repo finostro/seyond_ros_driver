@@ -169,7 +169,7 @@ void ROSDemo::printPacketLossRate(const seyond::SeyondScan::ConstPtr &msg) {
       cur_start_sub_seq_ = last_sub_seq_;
       double packet_loss_rate =
           1.0 - static_cast<double>(received_packets_count_) / static_cast<double>(total_expected_packets_count_ + 1);
-      ROS_INFO("Total packet loss rate: %.5lf %% [%d/%d]", packet_loss_rate, received_packets_count_,
+      ROS_INFO("Total packet loss rate: %.5lf %% [%d/%d]", packet_loss_rate * 100.0, received_packets_count_,
                total_expected_packets_count_ + 1);
     }
   }
