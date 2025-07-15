@@ -132,7 +132,7 @@ def generate_launch_description():
             DeclareLaunchArgument(
                 'coordinate_mode',
                 default_value='3',
-                description='ros point cloud coordinate mode, 0/1/2/3/4'
+                description='specify coordinate transformation, default is 3, (x/y/z) 0:up/right/forward 3:forward/left/up'
             ),
             DeclareLaunchArgument(
                 'transform_enable',

@@ -49,8 +49,7 @@
   <arg name="min_range" default="0.4" />
   <!-- when using public build, use this parameter to pass config parameter name value pairs -->
   <arg name="name_value_pairs" default="" />
-  <!-- specify coordinate transformation, default is 0. 
-  you can specify it to change coordinate from x/y/z to y/z/x, y/x/z, z/-y/x, z/x/y, z/-y/x -->
+  <!-- specify coordinate transformation, default is 3, (x/y/z) 0:up/right/forward 3:forward/left/up -->
   <arg name="coordinate_mode" default="3" />
 
   <!-- transform -->
