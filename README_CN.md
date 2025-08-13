@@ -96,6 +96,21 @@ sudo apt-get install -y  libyaml-cpp-dev
 
 如果您有自己的ROS/ROS2工作空间，请参考[ROS包构建](src/seyond_lidar_ros/README.md)
 
+
+**拉取seyond_sdk子模块**
+
+```
+git submodule update --init --recursive
+```
+
+可选
+```
+cd src/seyond_lidar_ros/seyond_sdk
+git checkout <您想使用的release tag>
+```
+您也可以将要使用的inno-lidar-sdk解压到`src/seyond_lidar_ros/seyond_sdk`目录下。
+
+
 **编译**
 
 ```

@@ -21,4 +21,16 @@
 ### Fixed
 - Fixed the issue of the bloom-generate build.
 - Fixed the submodule link error.
-  
+
+
+## [v1.0.2] (2025-08-13)
+
+### Changed
+- Updated the submodule seyond_sdk to v3.103.1.
+- Deleted the unused cmake config.
+- Added the submodule instructions to the README.md.
+
+### Fixed
+- Fixed replay_rosbag parameter error.
+- Fixed the packet loss rate display error.
+- Fixed launch file comment error.

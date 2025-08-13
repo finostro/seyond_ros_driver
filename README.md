@@ -98,6 +98,21 @@ please refer to [config.yaml](/src/seyond_lidar_ros/config/config.yaml), support
 
 If you have your own ROS/ROS2 workspace, please refer to [ROS package build](src/seyond_lidar_ros/README.md)
 
+
+**Pull seyond_sdk submodule**
+
+```
+git submodule update --init --recursive
+```
+
+optional
+```
+cd src/seyond_lidar_ros/seyond_sdk
+git checkout <the release tag you want to use>
+```
+You can also unzip the inno-lidar-sdk you want to use into the `src/seyond_lidar_ros/seyond_sdk` directory.
+
+
 **Compile**
 
 ```
