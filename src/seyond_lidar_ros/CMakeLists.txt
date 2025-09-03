@@ -37,6 +37,7 @@ if($ENV{ROS_VERSION} MATCHES "2")
   # find dependencies
   find_package(ament_cmake REQUIRED)
   find_package(rclcpp REQUIRED)
+  find_package(rclcpp_components REQUIRED)
   find_package(std_msgs REQUIRED)
   find_package(sensor_msgs REQUIRED)
   find_package(PCL REQUIRED)
@@ -55,15 +56,15 @@ if($ENV{ROS_VERSION} MATCHES "2")
 
   include_directories(./)
 
-  # seyond_node
-  add_executable(seyond_node
-    node/seyond_node.cc
+  # seyond_component
+  add_library(seyond_component SHARED
+    node/seyond_component.cc
     src/driver/driver_lidar.cc
   )
 
-  rosidl_target_interfaces(seyond_node ${PROJECT_NAME} "rosidl_typesupport_cpp")
+  rosidl_target_interfaces(seyond_component ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
-  target_include_directories(seyond_node
+  target_include_directories(seyond_component
     PRIVATE
     src/driver
     ${SEYOND_SDK_PATH}
@@ -72,12 +73,12 @@ if($ENV{ROS_VERSION} MATCHES "2")
     ${PCL_INCLUDE_DIRS}
   )
 
-  target_link_directories(seyond_node
+  target_link_directories(seyond_component
     PRIVATE
     ${SEYOND_SDK_PATH}/lib
   )
 
-  target_link_libraries(seyond_node
+  target_link_libraries(seyond_component
     innolidarsdkclient.a
     innolidarsdkcommon.a
     innolidarutils.a
@@ -85,14 +86,20 @@ if($ENV{ROS_VERSION} MATCHES "2")
     ${YAML_CPP_LIBRARIES}
   )
 
-  ament_target_dependencies(seyond_node
+  ament_target_dependencies(seyond_component
     rclcpp
+    rclcpp_components
     PCL
     std_msgs
     sensor_msgs
     message_filters
     pcl_msgs
     pcl_conversions
+  )
+
+  rclcpp_components_register_node(seyond_component
+    PLUGIN "seyond::SeyondNode"
+    EXECUTABLE seyond_node
   )
 
   # seyond_test
@@ -115,9 +122,12 @@ if($ENV{ROS_VERSION} MATCHES "2")
 
   # install group
   install(TARGETS
+    seyond_component
     seyond_node
     seyond_test
-    DESTINATION lib/${PROJECT_NAME}
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION lib/${PROJECT_NAME}
   )
   install(FILES
     launch/start.py

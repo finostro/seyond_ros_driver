@@ -156,13 +156,22 @@ class ROSAdapter {
   uint32_t packets_width_;
 };
 
-class ROSNode {
+namespace seyond {
+class SeyondNode {
  public:
-  void init() {
-    node_ptr_ = rclcpp::Node::make_shared("seyond", rclcpp::NodeOptions()
-                                                        .allow_undeclared_parameters(true)
-                                                        .automatically_declare_parameters_from_overrides(true)
-                                                        .use_intra_process_comms(true));
+  SeyondNode( const rclcpp::NodeOptions & options) {
+
+    init(options);
+
+    start();
+  }
+
+  rclcpp::node_interfaces::NodeBaseInterface::SharedPtr get_node_base_interface(){
+    return node_ptr_->get_node_base_interface();
+  }
+
+  void init( const rclcpp::NodeOptions & options) {
+    node_ptr_ = rclcpp::Node::make_shared("seyond", options);
     std::string yaml_file;
     node_ptr_->get_parameter_or<std::string>("config_path", yaml_file, "");
     if (!yaml_file.empty()) {
@@ -178,7 +187,7 @@ class ROSNode {
     lidar_num_ = lidar_configs_.size();
     ros_adapters_.resize(lidar_num_);
 
-    seyond::DriverLidar::init_log_s(common_config_.log_level, &ROSNode::rosLogCallback);
+    seyond::DriverLidar::init_log_s(common_config_.log_level, &SeyondNode::rosLogCallback);
     seyond::YamlTools::printConfig(lidar_configs_);
 
     for (int32_t i = 0; i < lidar_num_; i++) {
@@ -244,9 +253,6 @@ class ROSNode {
     lidar_configs_.emplace_back(lidar_config);
   }
 
-  void spin() {
-    rclcpp::spin(this->node_ptr_);
-  }
 
   static void rosLogCallback(int32_t level, const char* header2, const char* msg) {
     switch (level) {
@@ -281,3 +287,4 @@ class ROSNode {
   std::vector<std::unique_ptr<ROSAdapter>> ros_adapters_;
   std::unique_ptr<seyond::MultiFusion> fusion_;
 };
+}
