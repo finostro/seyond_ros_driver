@@ -37,6 +37,7 @@ if($ENV{ROS_VERSION} MATCHES "2")
   # find dependencies
   find_package(ament_cmake REQUIRED)
   find_package(rclcpp REQUIRED)
+  find_package(rclcpp_components REQUIRED)
   find_package(std_msgs REQUIRED)
   find_package(sensor_msgs REQUIRED)
   find_package(PCL REQUIRED)
@@ -53,21 +54,21 @@ if($ENV{ROS_VERSION} MATCHES "2")
 
   include_directories(./)
 
-  # seyond_node
-  add_executable(seyond_node
-    node/seyond_node.cc
+  # seyond_component
+  add_library(seyond_component SHARED
+    node/seyond_component.cc
     src/driver/driver_lidar.cc
   )
 
   if(COMMAND rosidl_get_typesupport_target)
-    rosidl_get_typesupport_target(seyond_node_typesupport ${PROJECT_NAME} "rosidl_typesupport_cpp")
-    target_link_libraries(seyond_node "${seyond_node_typesupport}")
+    rosidl_get_typesupport_target(seyond_component_typesupport ${PROJECT_NAME} "rosidl_typesupport_cpp")
+    target_link_libraries(seyond_component "${seyond_component_typesupport}")
   else()
     # ROS 2 Foxy fallback
-    rosidl_target_interfaces(seyond_node ${PROJECT_NAME} "rosidl_typesupport_cpp")
+    rosidl_target_interfaces(seyond_component ${PROJECT_NAME} "rosidl_typesupport_cpp")
   endif()
 
-  target_include_directories(seyond_node
+  target_include_directories(seyond_component
     PRIVATE
     src/driver
     ${SEYOND_SDK_PATH}
@@ -77,24 +78,30 @@ if($ENV{ROS_VERSION} MATCHES "2")
     ${pcl_conversions_INCLUDE_DIRS}
   )
 
-  target_link_directories(seyond_node
+  target_link_directories(seyond_component
     PRIVATE
     ${SEYOND_SDK_PATH}/lib
   )
 
-  target_link_libraries(seyond_node
+  target_link_libraries(seyond_component
     innolidarsdkclient.a
     innolidarsdkcommon.a
     innolidarutils.a
     ${YAML_CPP_LIBRARIES}
   )
 
-  target_link_libraries(seyond_node
+  target_link_libraries(seyond_component
     ${rclcpp_TARGETS}
+    ${rclcpp_components_TARGETS}
     ${std_msgs_TARGETS}
     ${sensor_msgs_TARGETS}
     ${pcl_conversions_TARGETS}
     ${PCL_LIBRARIES}
+  )
+
+  rclcpp_components_register_node(seyond_component
+    PLUGIN "seyond::SeyondNode"
+    EXECUTABLE seyond_node
   )
 
   # seyond_test
@@ -123,9 +130,12 @@ if($ENV{ROS_VERSION} MATCHES "2")
 
   # install group
   install(TARGETS
+    seyond_component
     seyond_node
     seyond_test
-    DESTINATION lib/${PROJECT_NAME}
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION lib/${PROJECT_NAME}
   )
   install(FILES
     launch/start.py
