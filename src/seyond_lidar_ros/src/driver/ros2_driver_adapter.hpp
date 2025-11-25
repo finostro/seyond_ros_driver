@@ -8,8 +8,13 @@
 
 #pragma once
 
+#include <src/driver/point_types.h>
+#include <pcl/types.h>
 #include <pcl_conversions/pcl_conversions.h>
+#include <pcl/point_cloud.h>
+#include <pcl/filters/filter.h>
 
+#include <rclcpp/node_options.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <std_msgs/msg/float64.hpp>
@@ -129,14 +134,17 @@ class ROSAdapter {
   }
 
   void publishFrame(const pcl::PointCloud<SeyondPoint>& frame, double timestamp) {
+    pcl::Indices indices;
+    pcl::PointCloud<SeyondPoint> filtered_frame;
+    pcl::removeNaNFromPointCloud<SeyondPoint>(frame, filtered_frame, indices);
     sensor_msgs::msg::PointCloud2 ros_msg;
-    pcl::toROSMsg(frame, ros_msg);
+    pcl::toROSMsg(filtered_frame, ros_msg);
     ros_msg.header.frame_id = lidar_config_.frame_id;
     int64_t ts_ns = timestamp * 1000;
     ros_msg.header.stamp.sec = ts_ns / 1000000000;
     ros_msg.header.stamp.nanosec = ts_ns % 1000000000;
-    ros_msg.width = frame.width;
-    ros_msg.height = frame.height;
+    ros_msg.width = filtered_frame.width;
+    ros_msg.height = filtered_frame.height;
     inno_frame_pub_->publish(std::move(ros_msg));
   }
 
@@ -171,8 +179,10 @@ class SeyondNode {
   }
 
   void init( const rclcpp::NodeOptions & options) {
-    node_ptr_ = rclcpp::Node::make_shared("seyond", options);
+    rclcpp::NodeOptions options_copy = options;
+    node_ptr_ = rclcpp::Node::make_shared("seyond", options_copy.allow_undeclared_parameters(true).allow_undeclared_parameters(true).automatically_declare_parameters_from_overrides(true));
     std::string yaml_file;
+
     node_ptr_->get_parameter_or<std::string>("config_path", yaml_file, "");
     if (!yaml_file.empty()) {
       int32_t ret = seyond::YamlTools::parseConfig(yaml_file, lidar_configs_, common_config_);

@@ -10,6 +10,7 @@
 
 #include <assert.h>
 
+#include <cstdint>
 #include <thread>
 #include <utility>
 
@@ -20,6 +21,7 @@
 constexpr uint64_t KBUF_SIZE = 1024 * 1024 * 10;
 constexpr double us_in_second_c = 1000000.0;
 constexpr double ten_us_in_second_c = 100000.0;
+constexpr uint32_t ten_us_in_nanosecond_c = 10000;
 
 namespace seyond {
 
@@ -504,7 +506,7 @@ void DriverLidar::point_xyz_data_parse(bool is_use_refl, uint32_t point_num, Poi
     point.scan_idx = point_ptr->scan_idx;
     point.flags = point_ptr->channel | roi | (point_ptr->facet << 3);
     point.is_2nd_return = point_ptr->is_2nd_return;
-    point.timestamp = point_ptr->ts_10us / ten_us_in_second_c + current_ts_start_;
+    point.timestamp = point_ptr->ts_10us * ten_us_in_nanosecond_c ;
 #endif
     coordinate_transfer(&point, coordinate_mode_, point_ptr->x, point_ptr->y, point_ptr->z);
     pcl_pc_ptr->points.push_back(point);

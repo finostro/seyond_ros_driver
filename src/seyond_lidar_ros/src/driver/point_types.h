@@ -7,13 +7,15 @@
  */
 
 #pragma once
+#include <cstdint>
+#define PCL_NO_PRECOMPILE
 #include <pcl/point_types.h>
 
 namespace seyond {
 
 struct EIGEN_ALIGN16 PointXYZIT {
   PCL_ADD_POINT4D;
-  double timestamp;
+  std::uint32_t timestamp;
   float intensity;
   std::uint8_t flags;
   std::uint8_t elongation;
