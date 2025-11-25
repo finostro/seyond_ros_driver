@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 project(seyond)
-
+include(CheckCXXCompilerFlag)
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
   set(CMAKE_C_STANDARD 99)
@@ -40,7 +40,7 @@ if($ENV{ROS_VERSION} MATCHES "2")
   find_package(rclcpp_components REQUIRED)
   find_package(std_msgs REQUIRED)
   find_package(sensor_msgs REQUIRED)
-  find_package(PCL REQUIRED)
+  find_package(PCL REQUIRED COMPONENTS common filters)
   find_package(pcl_conversions REQUIRED)
   find_package(builtin_interfaces REQUIRED)
   find_package(rosidl_default_generators REQUIRED)
@@ -70,13 +70,18 @@ if($ENV{ROS_VERSION} MATCHES "2")
 
   target_include_directories(seyond_component
     PRIVATE
-    src/driver
     ${SEYOND_SDK_PATH}
     ${SEYOND_SDK_PATH}/apps
     ${SEYOND_SDK_PATH}/src
     ${PCL_INCLUDE_DIRS}
     ${pcl_conversions_INCLUDE_DIRS}
+    src/driver
   )
+  # target_include_directories(seyond_component
+  #   PUBLIC
+  #       "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/driver>"
+  #       "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
+  # )
 
   target_link_directories(seyond_component
     PRIVATE
@@ -89,6 +94,7 @@ if($ENV{ROS_VERSION} MATCHES "2")
     innolidarutils.a
     ${YAML_CPP_LIBRARIES}
   )
+  # target_link_options(seyond_component PRIVATE "-Wl,--no-undefined")
 
   target_link_libraries(seyond_component
     ${rclcpp_TARGETS}
@@ -102,6 +108,7 @@ if($ENV{ROS_VERSION} MATCHES "2")
   rclcpp_components_register_node(seyond_component
     PLUGIN "seyond::SeyondNode"
     EXECUTABLE seyond_node
+    # NO_UNDEFINED_SYMBOLS
   )
 
   # seyond_test
@@ -128,11 +135,18 @@ if($ENV{ROS_VERSION} MATCHES "2")
     BUILD_WITH_INSTALL_RPATH FALSE
     LINK_FLAGS "-Wl,-rpath,$ORIGIN/")
 
+  ament_export_targets(export_seyond_component HAS_LIBRARY_TARGET)
+  ament_export_dependencies(PCL pcl_ros pcl_filters)
+
+  install( DIRECTORY src/driver
+   DESTINATION include
+  )
   # install group
   install(TARGETS
     seyond_component
     seyond_node
     seyond_test
+  EXPORT export_seyond_component
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}
