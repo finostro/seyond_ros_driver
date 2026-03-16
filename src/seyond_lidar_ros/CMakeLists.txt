@@ -46,6 +46,7 @@ if($ENV{ROS_VERSION} MATCHES "2")
   find_package(builtin_interfaces REQUIRED)
   find_package(rosidl_default_generators REQUIRED)
   find_package(yaml-cpp REQUIRED)
+  find_package(sample_collector_machine_interface REQUIRED)
 
   rosidl_generate_interfaces(${PROJECT_NAME}
     "msg/SeyondPacket.msg"
@@ -104,6 +105,7 @@ if($ENV{ROS_VERSION} MATCHES "2")
     ${sensor_msgs_TARGETS}
     ${pcl_conversions_TARGETS}
     ${PCL_LIBRARIES}
+    ${sample_collector_machine_interface_TARGETS}
   )
 
   rclcpp_components_register_node(seyond_component

@@ -40,6 +40,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <sensor_msgs/msg/imu.hpp>
 #include <std_msgs/msg/float64.hpp>
+#include <std_msgs/msg/header.hpp>
 #include <yaml-cpp/yaml.h>
 
 #include <limits>
@@ -48,11 +49,14 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <utility>
 #include <vector>
 
+#include <sample_collector_machine_interface/msg/heartbeat.hpp>
+
 #include "driver_lidar.h"
 #include "yaml_tools.hpp"
 #include "seyond/msg/seyond_packet.hpp"
 #include "seyond/msg/seyond_scan.hpp"
 #include "src/multi_fusion/ros2_multi_fusion.hpp"
+
 
 
 #define ROS_INFO(...) RCLCPP_INFO(rclcpp::get_logger("seyond"), __VA_ARGS__)
@@ -81,6 +85,8 @@ class ROSAdapter {
     std::string packet_topic = lidar_config_.topic_prefix + "/packet";
     std::string imu_topic = lidar_config_.topic_prefix + "/imu";
     inno_frame_pub_ = node_ptr_->create_publisher<sensor_msgs::msg::PointCloud2>(pointcloud_topic, qos);
+    heartbeat_pub_ = node_ptr_->create_publisher<sample_collector_machine_interface::msg::Heartbeat>(
+        pointcloud_topic + "/heartbeat", 10);
     driver_ptr_->register_publish_frame_callback(
         std::bind(&ROSAdapter::publishFrame, this, std::placeholders::_1, std::placeholders::_2));
 
@@ -179,7 +185,17 @@ class ROSAdapter {
     ros_msg.get().header.stamp.nanosec = ts_ns % 1000000000;
     ros_msg.get().width = frame.width;
     ros_msg.get().height = frame.height;
+
+    sendHeartBeat(ros_msg.get().header);
+
     inno_frame_pub_->publish(std::move(ros_msg));
+  }
+
+  void sendHeartBeat(const std_msgs::msg::Header& header)
+  {
+    sample_collector_machine_interface::msg::Heartbeat heartbeat_msg;
+    heartbeat_msg.header = header;
+    this->heartbeat_pub_->publish(heartbeat_msg);
   }
 
   void publishImu(const std::vector<float>& imu_data, uint64_t imu_ts_ns) {
@@ -204,6 +220,7 @@ class ROSAdapter {
   std::unique_ptr<seyond::DriverLidar> driver_ptr_;
 
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr inno_frame_pub_{nullptr};
+  rclcpp::Publisher<sample_collector_machine_interface::msg::Heartbeat>::SharedPtr heartbeat_pub_{nullptr};
   rclcpp::Publisher<seyond::msg::SeyondScan>::SharedPtr inno_pkt_pub_{nullptr};
   rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr inno_imu_pub_{nullptr};
   rclcpp::Subscription<seyond::msg::SeyondScan>::SharedPtr inno_pkt_sub_{nullptr};
