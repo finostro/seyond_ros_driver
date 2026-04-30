@@ -61,6 +61,8 @@ class ROSAdapter {
     qos.best_effort();
     inno_frame_pub_ = node_ptr_->create_publisher<sensor_msgs::msg::PointCloud2>(lidar_config_.frame_topic, qos);
     heartbeat_pub_  = node_ptr_->create_publisher<sample_collector_machine_interface::msg::Heartbeat>(lidar_config_.frame_topic + "/heartbeat", 10);
+
+    ROS_INFO("heartbeat_pub_");
     
     driver_ptr_->register_publish_frame_callback(
         std::bind(&ROSAdapter::publishFrame, this, std::placeholders::_1, std::placeholders::_2));
@@ -151,16 +153,18 @@ class ROSAdapter {
     ros_msg.get().header.stamp.nanosec = ts_ns % 1000000000;
     ros_msg.get().width = frame.width;
     ros_msg.get().height = frame.height;
+    
+    sendHeartBeat(ros_msg.get().header);
+    
     inno_frame_pub_->publish(std::move(ros_msg));
 
-    this->sendHeartBeat(ros_msg.header);
   }
 
   void sendHeartBeat(const std_msgs::msg::Header& header)
   {
     sample_collector_machine_interface::msg::Heartbeat heartbeat_msg;
     heartbeat_msg.header = header;
-    this->heartbeat_pub_->publish(heartbeat_msg);
+    heartbeat_pub_->publish(heartbeat_msg);
   }
 
  private:

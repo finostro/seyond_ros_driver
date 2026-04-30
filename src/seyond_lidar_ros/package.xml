@@ -16,6 +16,7 @@
 
   <depend condition="$ROS_VERSION == 2">rclcpp</depend>
   <depend condition="$ROS_VERSION == 2">rclcpp_components</depend>
+  <depend condition="$ROS_VERSION == 2">sample_collector_machine_interface</depend>
 
   <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>
