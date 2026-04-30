@@ -195,7 +195,7 @@ class ROSAdapter {
   {
     sample_collector_machine_interface::msg::Heartbeat heartbeat_msg;
     heartbeat_msg.header = header;
-    this->heartbeat_pub_->publish(heartbeat_msg);
+    heartbeat_pub_->publish(heartbeat_msg);
   }
 
   void publishImu(const std::vector<float>& imu_data, uint64_t imu_ts_ns) {
