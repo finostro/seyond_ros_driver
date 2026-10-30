@@ -52,6 +52,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sample_collector_machine_interface/msg/heartbeat.hpp>
 
 #include "driver_lidar.h"
+#include "sdk_common/inno_lidar_packet_utils.h"
 #include "yaml_tools.hpp"
 #include "seyond/msg/seyond_packet.hpp"
 #include "seyond/msg/seyond_scan.hpp"
@@ -125,10 +126,31 @@ class ROSAdapter {
         std::memcpy(driver_ptr_->anglehv_table_.data(), pkt.table.data(), pkt.table.size());
         driver_ptr_->anglehv_table_init_ = true;
       }
+      const auto* data_pkt = reinterpret_cast<const InnoDataPacket*>(pkt.data.data());
+      // Compact packets need the HV table: without it the conversion gives wrong points
+      if (CHECK_CO_SPHERE_POINTCLOUD_DATA(data_pkt->type) && !driver_ptr_->anglehv_table_init_) {
+        replay_frame_valid_ = false;
+        continue;
+      }
+      if (!replay_frame_started_) {
+        // Point timestamps are relative to the start of their frame, as in live mode
+        driver_ptr_->frame_start_ts_ = data_pkt->common.ts_start_us;
+        replay_frame_started_ = true;
+      }
       driver_ptr_->convert_and_parse(reinterpret_cast<const int8_t*>(pkt.data.data()));
     }
 
     if (msg->is_last_scan) {
+      replay_frame_started_ = false;
+      if (!replay_frame_valid_) {
+        // Partial frame: started before the first HV table arrived
+        replay_frame_valid_ = true;
+        driver_ptr_->pcl_pc_ptr->clear();
+        RCLCPP_WARN_THROTTLE(
+          node_ptr_->get_logger(), *node_ptr_->get_clock(), 5000,
+          "%s: dropping frames until the HV table is received", lidar_config_.lidar_name.c_str());
+        return;
+      }
       sensor_msgs::msg::PointCloud2 ros_msg;
       driver_ptr_->transform_pointcloud();
       pcl::toROSMsg(*driver_ptr_->pcl_pc_ptr, ros_msg);
@@ -163,7 +185,7 @@ class ROSAdapter {
     msg.data.resize(pkt_len);
     std::memcpy(msg.data.data(), pkt, pkt_len);
     msg.has_table = false;
-    if ((frame_count_ == table_send_hz_) && driver_ptr_->anglehv_table_init_) {
+    if ((frame_count_ >= table_send_hz_) && driver_ptr_->anglehv_table_init_) {
       frame_count_ = 0;
       msg.has_table = true;
       msg.table.resize(driver_ptr_->anglehv_table_.size());
@@ -227,9 +249,12 @@ class ROSAdapter {
 
   std::unique_ptr<seyond::msg::SeyondScan> inno_scan_msg_;
 
-  uint32_t frame_count_{0};
   uint32_t table_send_hz_{20};
+  // Starts at table_send_hz_ so that the first packet carries the HV table
+  uint32_t frame_count_{table_send_hz_};
   uint32_t packets_width_{0};
+  bool replay_frame_started_{false};
+  bool replay_frame_valid_{true};
 };
 
 namespace seyond {

@@ -206,8 +206,8 @@ class DriverLidar {
   int64_t current_frame_id_{-1};
   std::vector<uint8_t> data_buffer;
   double current_ts_start_;
-  double frame_start_ts_;
-  uint32_t current_ts_start_us_;
+  double frame_start_ts_{0.0};
+  uint32_t current_ts_start_us_{0};
 
   // transform
   Eigen::Matrix4f T_2_0_;

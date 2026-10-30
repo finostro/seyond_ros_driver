@@ -537,13 +537,20 @@ void DriverLidar::convert_and_parse(const int8_t *pkt) {
 void DriverLidar::convert_and_parse(const InnoDataPacket *pkt) {
   if (CHECK_SPHERE_POINTCLOUD_DATA(pkt->type)) {
     // convert sphere to xyz
+    bool converted;
     if (anglehv_table_init_) {
-      inno_lidar_convert_to_xyz_pointcloud2(
+      converted = inno_lidar_convert_to_xyz_pointcloud2(
           pkt, reinterpret_cast<InnoDataPacket *>(&data_buffer[0]), data_buffer.size(), false,
           reinterpret_cast<InnoDataPacket *>(anglehv_table_.data()));
     } else {
-      InnoDataPacketUtils::convert_to_xyz_pointcloud(*pkt, reinterpret_cast<InnoDataPacket *>(&data_buffer[0]),
-                                                     data_buffer.size(), false, ring_id_converter_, nullptr, false);
+      converted = InnoDataPacketUtils::convert_to_xyz_pointcloud(
+          *pkt, reinterpret_cast<InnoDataPacket *>(&data_buffer[0]), data_buffer.size(), false,
+          ring_id_converter_, nullptr, false);
+    }
+    if (!converted) {
+      // data_buffer still holds the previous packet: parsing it would duplicate its points
+      inno_log_warning("%s, failed to convert pkt->idx = %" PRI_SIZEU, param_.lidar_name.c_str(), pkt->idx);
+      return;
     }
     data_packet_parse(reinterpret_cast<InnoDataPacket *>(&data_buffer[0]));
   } else if (CHECK_XYZ_POINTCLOUD_DATA(pkt->type)) {
