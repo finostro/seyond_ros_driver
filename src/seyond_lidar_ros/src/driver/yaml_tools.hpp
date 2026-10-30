@@ -81,7 +81,12 @@ class YamlTools {
         tmp_config.frame_id = lidar_config["lidar"]["frame_id"].as<std::string>("seyond");
         tmp_config.topic_prefix = lidar_config["lidar"]["topic_prefix"].as<std::string>("/seyond_lidar");
 
-        tmp_config.lidar_name = tmp_config.topic_prefix;
+        // frame_topic, packet_topic and lidar_name (v1.0.2 keys) override the topic_prefix defaults
+        tmp_config.frame_topic =
+            lidar_config["lidar"]["frame_topic"].as<std::string>(tmp_config.topic_prefix + "/pointcloud");
+        tmp_config.packet_topic =
+            lidar_config["lidar"]["packet_topic"].as<std::string>(tmp_config.topic_prefix + "/packet");
+        tmp_config.lidar_name = lidar_config["lidar"]["lidar_name"].as<std::string>(tmp_config.topic_prefix);
         tmp_config.lidar_ip = lidar_config["lidar"]["lidar_ip"].as<std::string>("172.168.1.10");
         tmp_config.port = lidar_config["lidar"]["port"].as<int32_t>(8010);
         tmp_config.udp_port = lidar_config["lidar"]["udp_port"].as<int32_t>(8010);

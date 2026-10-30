@@ -75,6 +75,8 @@ struct LidarConfig {
 
   std::string frame_id = "seyond";
   std::string topic_prefix = "/seyond_lidar";
+  std::string frame_topic = "/seyond_lidar/pointcloud";
+  std::string packet_topic = "/seyond_lidar/packet";
 
   std::string lidar_name = "seyond";
   std::string lidar_ip = "172.168.1.10";

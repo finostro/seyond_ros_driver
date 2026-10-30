@@ -81,8 +81,8 @@ class ROSAdapter {
   void init() {
     rclcpp::QoS qos(rclcpp::KeepLast(1));
     qos.best_effort();
-    std::string pointcloud_topic = lidar_config_.topic_prefix + "/pointcloud";
-    std::string packet_topic = lidar_config_.topic_prefix + "/packet";
+    const std::string& pointcloud_topic = lidar_config_.frame_topic;
+    const std::string& packet_topic = lidar_config_.packet_topic;
     std::string imu_topic = lidar_config_.topic_prefix + "/imu";
     inno_frame_pub_ = node_ptr_->create_publisher<sensor_msgs::msg::PointCloud2>(pointcloud_topic, qos);
     heartbeat_pub_ = node_ptr_->create_publisher<sample_collector_machine_interface::msg::Heartbeat>(
@@ -302,6 +302,8 @@ class SeyondNode {
     node_ptr_->get_parameter_or<std::string>("frame_id", lidar_config.frame_id, "seyond");
     node_ptr_->get_parameter_or<std::string>("topic_prefix", lidar_config.topic_prefix, "seyond_lidar");
     lidar_config.lidar_name = lidar_config.topic_prefix;  // use topic_prefix as lidar name
+    lidar_config.frame_topic = lidar_config.topic_prefix + "/pointcloud";
+    lidar_config.packet_topic = lidar_config.topic_prefix + "/packet";
 
     // Parse parameters for driver
     node_ptr_->get_parameter_or<std::string>("lidar_ip", lidar_config.lidar_ip, "172.168.1.10");
