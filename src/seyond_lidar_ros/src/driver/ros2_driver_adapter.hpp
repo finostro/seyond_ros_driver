@@ -80,7 +80,7 @@ class ROSAdapter {
   }
 
   void init() {
-    rclcpp::QoS qos(rclcpp::KeepLast(1));
+    rclcpp::QoS qos(rclcpp::KeepLast(5));
     qos.best_effort();
     const std::string& pointcloud_topic = lidar_config_.frame_topic;
     const std::string& packet_topic = lidar_config_.packet_topic;
