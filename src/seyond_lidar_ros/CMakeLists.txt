@@ -134,6 +134,38 @@ if($ENV{ROS_VERSION} MATCHES "2")
     ${PCL_LIBRARIES}
   )
 
+  # seyond_bag_reconstruct: offline packets -> point clouds bag converter
+  find_package(rosbag2_cpp REQUIRED)
+  find_package(ament_index_cpp REQUIRED)
+  add_executable(seyond_bag_reconstruct
+    node/seyond_bag_reconstruct.cc
+    src/driver/driver_lidar.cc
+  )
+  rosidl_get_typesupport_target(seyond_bag_reconstruct_typesupport ${PROJECT_NAME} "rosidl_typesupport_cpp")
+  target_include_directories(seyond_bag_reconstruct
+    PRIVATE
+    ${SEYOND_SDK_PATH}
+    ${SEYOND_SDK_PATH}/apps
+    ${SEYOND_SDK_PATH}/src
+    ${PCL_INCLUDE_DIRS}
+    ${pcl_conversions_INCLUDE_DIRS}
+    src/driver
+  )
+  target_link_directories(seyond_bag_reconstruct PRIVATE ${SEYOND_SDK_PATH}/lib)
+  target_link_libraries(seyond_bag_reconstruct
+    "${seyond_bag_reconstruct_typesupport}"
+    innolidarsdkclient.a
+    innolidarsdkcommon.a
+    innolidarutils.a
+    ${YAML_CPP_LIBRARIES}
+    rosbag2_cpp::rosbag2_cpp
+    ament_index_cpp::ament_index_cpp
+    ${rclcpp_TARGETS}
+    ${sensor_msgs_TARGETS}
+    ${pcl_conversions_TARGETS}
+    ${PCL_LIBRARIES}
+  )
+
   set_target_properties(seyond_node PROPERTIES
     BUILD_WITH_INSTALL_RPATH FALSE
     LINK_FLAGS "-Wl,-rpath,$ORIGIN/")
@@ -149,6 +181,7 @@ if($ENV{ROS_VERSION} MATCHES "2")
     seyond_component
     seyond_node
     seyond_test
+    seyond_bag_reconstruct
   EXPORT export_seyond_component
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib

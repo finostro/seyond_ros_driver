@@ -25,6 +25,8 @@
   <depend>sample_collector_machine_interface</depend>
 
   <depend>yaml-cpp</depend>
+  <depend condition="$ROS_VERSION == 2">rosbag2_cpp</depend>
+  <depend condition="$ROS_VERSION == 2">ament_index_cpp</depend>
   
   <member_of_group>rosidl_interface_packages</member_of_group>
 
